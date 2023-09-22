@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.translator.R
+import com.example.translator.presentation.home.util.LanguageListSheet
 import com.example.translator.presentation.util.StandardTextField
 import com.example.translator.util.LanguageList
 import com.example.translator.util.LanguageList.languageList
@@ -114,6 +115,8 @@ fun Home(
         else -> R.drawable.sleeping
     }
 
+    val randomUserGreeting =  userGreeting[Random.nextInt(0 , 8)]
+
     val textToSpeech = remember { TextToSpeech(context){ status ->
         when(status){
             TextToSpeech.SUCCESS -> {
@@ -139,71 +142,12 @@ fun Home(
         sheetBackgroundColor = Color.Transparent,
         sheetElevation = 0.dp,
         sheetContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                Box(modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .fillMaxHeight(0.7f)
-                    .clip(RoundedCornerShape(20.dp))
-                    .shadow(5.dp)
-                    .background(Color(0xfffdfdfd))
-                ){
-                    LazyColumn(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(horizontal = 20.dp , vertical = 5.dp)
-                    ){
-                        stickyHeader {
-                            Text(
-                                text = "Language",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xfffdfdfd))
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                        }
-
-                        items(languageList.size){language ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(
-                                        if (languageList[language] == state.value.toLanguage) Color(
-                                            0xff4997d0
-                                        ).copy(alpha = 0.25f) else Color(0xfff0f0f0)
-                                    )
-                                    .border(
-                                        1.dp,
-                                        if (languageList[language] == state.value.toLanguage) Color(
-                                            0xff4997d0
-                                        ).copy(alpha = 0.25f) else Color(0xfff0f0f0),
-                                        RoundedCornerShape(4.dp)
-                                    )
-                                    .clickable {
-                                        viewModel.onEvent(HomeScreenEvent.ChangeToLanguage(language))
-                                        scope.launch {
-                                            modalBottomSheetState.hide()
-                                        }
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = languageList[language].uppercase(),
-                                    fontSize = 14.sp,
-                                    letterSpacing = 1.sp,
-                                    color = Color.Black,
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
+            LanguageListSheet(
+                selectedLanguage = state.value.toLanguage
+            ){language ->
+                viewModel.onEvent(HomeScreenEvent.ChangeToLanguage(language))
+                scope.launch {
+                    modalBottomSheetState.hide()
                 }
             }
         }
@@ -225,19 +169,21 @@ fun Home(
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween ,
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 5.dp)
                     ) {
                         Column {
                             Text(
-                                text = userGreeting[Random.nextInt(0 , 8)],
+                                text = randomUserGreeting,
                                 fontWeight = FontWeight.Bold ,
-                                fontSize = 20.sp ,
+                                fontSize = 18.sp ,
                                 color = Color.Black,
                                 letterSpacing = 1.sp ,
                             )
                             Text(
                                 text = greeting,
-                                fontSize = 14.sp ,
+                                fontSize = 12.sp ,
                                 color = Color.Black,
                                 letterSpacing = 1.sp ,
                             )
@@ -246,7 +192,9 @@ fun Home(
                         Image(
                             painter = painterResource(id = iconForHour),
                             contentDescription = "Image" ,
-                            modifier = Modifier.size(50.dp).clip(CircleShape),
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clip(CircleShape),
                             contentScale = ContentScale.Crop
                         )
 

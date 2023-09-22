@@ -74,10 +74,7 @@ class MainActivity : ComponentActivity() {
                         }
                     ){
                         println(it)
-                        Column {
-                            Home(padding = PaddingValues(top = 0.dp , bottom = 10.dp) , screenHeight = screenHeight , snackBar = scaffoldState)
-                        }
-
+                        Home(padding = PaddingValues(top = 0.dp , bottom = 10.dp) , screenHeight = screenHeight , snackBar = scaffoldState)
                     }
 
                 }
